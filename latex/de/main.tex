@@ -1,0 +1,54 @@
+\documentclass[12pt,a4paper]{article}
+
+\newcommand*{\plogo}{\fbox{$\mathcal{PL}$}}
+
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hypertexnames=false, hidelinks]{hyperref}
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage{stix} % Use the STIX fonts
+\usepackage{hyphenat}
+
+\lstset{
+  basicstyle=\ttfamily,
+  backgroundcolor=\color{gray!10},
+  frame=single,
+  captionpos=b, 
+  language=bash,
+  breaklines=true
+}
+\renewcommand{\lstlistingname}{Befehlszeile}
+
+\begin{document}
+\begin{titlepage} 
+	
+	\raggedleft 
+	
+	\rule{1pt}{\textheight}
+	\hspace{0.05\textwidth}
+  \parbox[b]{0.75\textwidth}{
+    {\raggedright
+      {\Huge\bfseries \nohyphens{Installationsanleitung von Tensorflow und Mediapipe Model Maker}}\\[2\baselineskip]
+      {\large\textit{\today}}\\[4\baselineskip]
+      {\Large\textsc{\href{https://github.com/TimR153}{TimR153 auf GitHub}}}
+      
+      \vspace{0.5\textheight}
+      
+      {\noindent Dieses Werk steht unter der \textbf{MIT-Lizenz}.  
+      Siehe die Datei \texttt{LICENSE} oder \url{https://opensource.org/licenses/MIT} für Details.}\\[\baselineskip]
+    }
+  }
+
+\end{titlepage}
+\thispagestyle{empty}
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+\pagenumbering{arabic}
+
+\end{document}
