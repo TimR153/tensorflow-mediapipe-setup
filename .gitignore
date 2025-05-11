@@ -311,3 +311,16 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+
+# Visual Studio
+*.suo
+*.wsuo
+*.user
+*.userosscache
+*.sln.docstates
+*.vsidx
+*.sqlite
+
+# PDF
+*.pdf
+!instructions-*.pdf
