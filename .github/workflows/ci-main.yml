@@ -1,0 +1,64 @@
+name: CI/CD for Main
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        lang: [en, de]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX Document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: latex/${{ matrix.lang }}/
+
+      - name: Rename PDF
+        run: |
+         mv latex/${{ matrix.lang }}/main.pdf instructions-${{ matrix.lang }}.pdf
+
+      - name: Upload PDF Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: instructions-${{ matrix.lang }}.pdf
+          path: instructions-${{ matrix.lang }}.pdf
+
+  commit-pdfs:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout Repository
+            uses: actions/checkout@v4
+            with:
+              fetch-depth: 0
+
+          - name: Download all PDFs
+            uses: actions/download-artifact@v4
+            with:
+             path: ./artifacts
+
+          - name: Move all PDFs to root
+            run: |
+              find ./artifacts -name "*.pdf" -exec cp {} ./ \;
+
+          - name: Clean up artifacts directory
+            run: rm -rf ./artifacts
+
+          - name: Commit all PDFs
+            uses: EndBug/add-and-commit@v9
+            with:
+              add: "*.pdf"
+              message: "Update all PDFs [ci skip]"
+              default_author: github_actions
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
