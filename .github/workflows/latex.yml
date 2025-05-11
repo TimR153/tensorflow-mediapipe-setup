@@ -24,6 +24,10 @@ jobs:
           root_file: main.tex
           working_directory: latex/${{ matrix.lang }}/
 
+      - name: Rename PDF
+        run: |
+         mv latex/${{ matrix.lang }}/main.pdf instructions-${{ matrix.lang }}.pdf
+
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
         with:
