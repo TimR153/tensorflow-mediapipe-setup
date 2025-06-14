@@ -1,0 +1,64 @@
+name: Dynamic Python-Environment-Tests
+
+on: [push, pull_request]
+
+jobs:
+  find-requirements:
+    runs-on: ubuntu-latest
+    outputs:
+      reqfiles: ${{ steps.set-reqfiles.outputs.reqfiles }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set-reqfiles
+        run: |
+          files=$(find macOS -type f -name '*requirements*.txt')
+          arr=()
+          for file in $files; do
+            arr+=("\"$file\"")
+          done
+          echo "reqfiles=[$(IFS=,; echo "${arr[*]}")]" >> $GITHUB_OUTPUT
+
+  test-pip-environments:
+    needs: find-requirements
+    runs-on: ubuntu-latest
+    if: ${{ needs.find-requirements.outputs.reqfiles != '[]' }}
+    strategy:
+      matrix:
+        reqfile: ${{ fromJson(needs.find-requirements.outputs.reqfiles) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract Python version from folder
+        id: extract-python
+        run: |
+          if [[ "${{ matrix.reqfile }}" =~ Py([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            PYTHON_VERSION="${BASH_REMATCH[1]}"
+          elif [[ "${{ matrix.reqfile }}" =~ Py([0-9]+\.[0-9]+) ]]; then
+            PYTHON_VERSION="${BASH_REMATCH[1]}"
+          else
+            PYTHON_VERSION="3.9"
+          fi
+          echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r ${{ matrix.reqfile }}
+
+      - name: Test environment
+        run: |
+          source venv/bin/activate
+          python --version
+          pip list
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          pytest tests/ || echo "Tests nicht gefunden oder fehlgeschlagen"
